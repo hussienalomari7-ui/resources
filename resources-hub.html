@@ -1,0 +1,511 @@
+<!DOCTYPE html>
+<!--
+  ============================================================
+  Resources & Knowledge Hub — Hussien Alomari
+  Single file: semantic HTML5 + vanilla CSS + vanilla JS.
+  No build step, no dependencies except Google Fonts.
+
+  TO ADD A RESOURCE
+  1. Copy the block between "CARD ITEM START" and "CARD ITEM END".
+  2. Paste it inside <div class="grid"> … </div>.
+  3. Change 5 things: image src, badge, title, description, href.
+  The resource counter updates itself.
+  ============================================================
+-->
+<html lang="en" dir="ltr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Resources &amp; Knowledge Hub — Hussien Alomari</title>
+<meta name="description" content="Curated guides, open-source repositories and study material in data science and AI.">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Plus+Jakarta+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+
+<script>
+  document.documentElement.classList.add('js');
+  try {
+    var t = localStorage.getItem('hub-theme');
+    document.documentElement.setAttribute('data-theme', t === 'light' ? 'light' : 'dark');
+  } catch (e) {
+    document.documentElement.setAttribute('data-theme', 'dark');
+  }
+</script>
+
+<style>
+/* ── Tokens ─────────────────────────────────────────────── */
+:root{
+  /* light */
+  --bg:          #ECF1EE;
+  --panel:       #FFFFFF;
+  --sunk:        #DDE6E1;
+  --text:        #0A1513;
+  --text-dim:    #4E6560;
+  --hair:        rgba(10,21,19,.13);
+  --hair-lit:    rgba(138,106,46,.45);
+  --gold:        #8A6A2E;
+  --gold-soft:   rgba(138,106,46,.10);
+  --glow-a:      rgba(47,107,85,.16);
+  --glow-b:      rgba(138,106,46,.10);
+  --sheen:       rgba(10,21,19,.07);
+  --on-gold:     #FFFFFF;
+  --shade:       0 1px 2px rgba(10,21,19,.05), 0 26px 50px -30px rgba(10,21,19,.45);
+
+  --ease:        cubic-bezier(.22,.61,.36,1);
+  --r:           16px;
+  --r-sm:        12px;
+
+  box-sizing: border-box;
+  padding-top: env(safe-area-inset-top, 0px);
+  padding-bottom: env(safe-area-inset-bottom, 0px);
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:        #070D0C;
+    --panel:     #0E1A17;
+    --sunk:      #0A1513;
+    --text:      #F2EFE7;
+    --text-dim:  #93A49C;
+    --hair:      rgba(228,197,144,.14);
+    --hair-lit:  rgba(228,197,144,.42);
+    --gold:      #E4C590;
+    --gold-soft: rgba(228,197,144,.10);
+    --glow-a:    rgba(31,92,70,.38);
+    --glow-b:    rgba(228,197,144,.10);
+    --sheen:     rgba(255,255,255,.13);
+    --on-gold:   #07110E;
+    --shade:     0 1px 2px rgba(0,0,0,.5), 0 30px 60px -34px rgba(0,0,0,.9);
+  }
+}
+:root[data-theme="dark"]{
+  --bg:        #070D0C;
+  --panel:     #0E1A17;
+  --sunk:      #0A1513;
+  --text:      #F2EFE7;
+  --text-dim:  #93A49C;
+  --hair:      rgba(228,197,144,.14);
+  --hair-lit:  rgba(228,197,144,.42);
+  --gold:      #E4C590;
+  --gold-soft: rgba(228,197,144,.10);
+  --glow-a:    rgba(31,92,70,.38);
+  --glow-b:    rgba(228,197,144,.10);
+  --sheen:     rgba(255,255,255,.13);
+  --on-gold:   #07110E;
+  --shade:     0 1px 2px rgba(0,0,0,.5), 0 30px 60px -34px rgba(0,0,0,.9);
+}
+
+*, *::before, *::after{ box-sizing: border-box; }
+html{ scroll-padding-top: env(safe-area-inset-top, 0px); -webkit-text-size-adjust: 100%; }
+
+body{
+  margin: 0;
+  min-height: 100%;
+  background: var(--bg);
+  color: var(--text);
+  font-family: "Plus Jakarta Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
+  font-size: 16px;
+  line-height: 1.65;
+  -webkit-font-smoothing: antialiased;
+  transition: background-color .5s var(--ease), color .5s var(--ease);
+}
+
+/* Aura + grain: the only two decorative layers on the page. */
+body::before{
+  content: "";
+  position: fixed; inset: 0; z-index: 0; pointer-events: none;
+  background:
+    radial-gradient(62% 48% at 16% -4%, var(--glow-a), transparent 62%),
+    radial-gradient(46% 38% at 88% 6%, var(--glow-b), transparent 66%);
+  animation: drift 26s var(--ease) infinite alternate;
+}
+body::after{
+  content: "";
+  position: fixed; inset: 0; z-index: 0; pointer-events: none;
+  opacity: .035; mix-blend-mode: overlay;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3'/%3E%3C/filter%3E%3Crect width='160' height='160' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+@keyframes drift{
+  from{ transform: translate3d(0,0,0) scale(1); }
+  to  { transform: translate3d(-3%,2%,0) scale(1.08); }
+}
+
+img{ max-width: 100%; display: block; }
+a{ color: inherit; }
+:focus-visible{ outline: 2px solid var(--gold); outline-offset: 3px; border-radius: 6px; }
+
+.wrap{
+  position: relative; z-index: 1;
+  width: min(1180px, 100%);
+  margin-inline: auto;
+  padding-inline: clamp(20px, 5vw, 48px);
+}
+
+/* ── Load sequence (one orchestrated moment) ────────────── */
+.js .rise{ opacity: 0; transform: translateY(16px); }
+.js.ready .rise{
+  opacity: 1; transform: none;
+  transition: opacity .8s var(--ease), transform .8s var(--ease);
+}
+
+/* ── Top bar ────────────────────────────────────────────── */
+.topbar{
+  display: flex; align-items: center; justify-content: space-between; gap: 20px;
+  padding-block: 26px;
+}
+.mark{ display: flex; flex-direction: column; line-height: 1.25; }
+.mark b{
+  font-family: "Instrument Serif", Georgia, serif;
+  font-size: 1.22rem; font-weight: 400; letter-spacing: .01em;
+}
+.mark small{ font-size: .78rem; color: var(--text-dim); letter-spacing: .04em; }
+
+.toggle{
+  display: inline-flex; align-items: center; gap: 9px;
+  padding: 8px 15px;
+  border: 1px solid var(--hair); border-radius: 999px;
+  background: transparent; color: var(--text-dim);
+  font: inherit; font-size: .82rem; cursor: pointer;
+  transition: all .3s var(--ease);
+}
+.toggle:hover{ color: var(--text); border-color: var(--hair-lit); background: var(--gold-soft); }
+.toggle svg{ width: 15px; height: 15px; }
+
+/* ── Hero ───────────────────────────────────────────────── */
+.hero{ padding-block: clamp(48px, 11vw, 112px) 0; max-width: 62ch; }
+.hero h1{
+  margin: 0;
+  font-family: "Instrument Serif", Georgia, serif;
+  font-weight: 400;
+  font-size: clamp(2.9rem, 9vw, 5.2rem);
+  line-height: 1.02;
+  letter-spacing: -.015em;
+}
+.hero p{
+  max-width: 54ch;
+  margin: 26px 0 0;
+  font-size: clamp(1rem, 2.4vw, 1.12rem);
+  font-weight: 300;
+  color: var(--text-dim);
+}
+
+.meta{
+  display: flex; flex-wrap: wrap; align-items: center; gap: 10px 18px;
+  margin-block: clamp(40px, 7vw, 68px) clamp(24px, 4vw, 38px);
+  padding-block-start: 18px;
+  border-block-start: 1px solid var(--hair);
+  font-size: .86rem; color: var(--text-dim);
+}
+.meta b{ color: var(--text); font-weight: 500; font-variant-numeric: tabular-nums; }
+.meta .dot{ width: 4px; height: 4px; border-radius: 50%; background: var(--gold); opacity: .8; }
+
+/* ── Grid ───────────────────────────────────────────────── */
+.grid{
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: clamp(20px, 2.6vw, 30px);
+  padding-block-end: clamp(64px, 11vw, 120px);
+}
+
+/* ── Card ───────────────────────────────────────────────── */
+.card{
+  position: relative;
+  display: flex; flex-direction: column;
+  padding: 13px 13px 4px;
+  background: var(--panel);
+  border: 1px solid var(--hair);
+  border-radius: var(--r);
+  transition: transform .45s var(--ease), border-color .45s var(--ease), box-shadow .45s var(--ease);
+}
+/* Cursor-tracked light, set by JS through --mx / --my. */
+.card::before{
+  content: "";
+  position: absolute; inset: 0; z-index: 0;
+  border-radius: inherit; pointer-events: none;
+  background: radial-gradient(460px circle at var(--mx,50%) var(--my,0%), var(--gold-soft), transparent 62%);
+  opacity: 0; transition: opacity .45s var(--ease);
+}
+.card:hover, .card:focus-within{
+  transform: translateY(-6px);
+  border-color: var(--hair-lit);
+  box-shadow: var(--shade);
+}
+.card:hover::before, .card:focus-within::before{ opacity: 1; }
+.card:focus-within{ outline: 2px solid var(--gold); outline-offset: 3px; }
+
+.card__media{
+  position: relative; z-index: 1;
+  aspect-ratio: 16 / 9;
+  overflow: hidden;
+  border-radius: var(--r-sm);
+  background: var(--sunk);
+}
+.card__media img{
+  width: 100%; height: 100%; object-fit: cover;
+  transition: transform .8s var(--ease);
+}
+.card__media::after{
+  content: "";
+  position: absolute; inset: 0; pointer-events: none;
+  background: linear-gradient(105deg, transparent 34%, var(--sheen) 50%, transparent 66%);
+  transform: translateX(-130%);
+  transition: transform 1s var(--ease);
+}
+.card:hover .card__media img{ transform: scale(1.07); }
+.card:hover .card__media::after{ transform: translateX(130%); }
+
+.card__body{ z-index: 1; display: flex; flex-direction: column; flex: 1 1 auto; padding: 20px 9px 0; }
+
+.card__badge{
+  display: inline-flex; align-items: center; gap: 8px; align-self: flex-start;
+  padding: 4px 12px;
+  border: 1px solid var(--hair); border-radius: 999px;
+  background: var(--gold-soft);
+  font-size: .76rem; font-weight: 500; letter-spacing: .01em;
+}
+.card__badge::before{ content: ""; width: 5px; height: 5px; border-radius: 50%; background: var(--gold); }
+
+.card__title{
+  margin: 16px 0 0;
+  font-family: "Instrument Serif", Georgia, serif;
+  font-weight: 400;
+  font-size: 1.62rem;
+  line-height: 1.22;
+  letter-spacing: -.005em;
+}
+.card__desc{
+  margin: 10px 0 26px;
+  font-size: .94rem; font-weight: 300;
+  color: var(--text-dim);
+}
+
+.card__cta{
+  display: flex; align-items: center; justify-content: space-between; gap: 14px;
+  margin-block-start: auto;
+  padding-block: 15px;
+  border-block-start: 1px solid var(--hair);
+  color: var(--gold);
+  font-size: .93rem; font-weight: 500;
+  text-decoration: none;
+}
+/* Stretched link: the whole card is clickable, but there is only one tab stop. */
+.card__cta::after{ content: ""; position: absolute; inset: 0; border-radius: var(--r); }
+.card__cta .arrow{
+  display: grid; place-items: center;
+  width: 36px; height: 36px; flex: none;
+  border: 1px solid var(--hair); border-radius: 50%;
+  transition: all .4s var(--ease);
+}
+.card__cta .arrow svg{ width: 16px; height: 16px; }
+.card:hover .card__cta .arrow, .card:focus-within .card__cta .arrow{
+  background: var(--gold); border-color: var(--gold); color: var(--on-gold);
+  transform: translateX(4px) rotate(-45deg);
+}
+.card__cta:focus-visible{ outline: none; }
+
+/* ── Footer ─────────────────────────────────────────────── */
+.colophon{
+  padding-block: 28px clamp(48px, 9vw, 84px);
+  border-block-start: 1px solid var(--hair);
+  font-size: .88rem; font-weight: 300; color: var(--text-dim);
+  max-width: 62ch;
+}
+.colophon a{ color: var(--text); text-underline-offset: 4px; text-decoration-color: var(--hair-lit); }
+.colophon a:hover{ color: var(--gold); }
+
+@media (prefers-reduced-motion: reduce){
+  *{ transition-duration: .01ms !important; animation: none !important; }
+  .js .rise{ opacity: 1; transform: none; }
+  .card:hover, .card:focus-within{ transform: none; }
+  .card:hover .card__media img{ transform: none; }
+  .card:hover .card__media::after{ transform: translateX(-130%); }
+}
+</style>
+</head>
+
+<body>
+<div class="wrap">
+
+  <header class="topbar rise">
+    <div class="mark">
+      <b>Hussien Alomari</b>
+      <small>Data Science &amp; AI Engineer</small>
+    </div>
+    <button class="toggle" id="themeToggle" type="button" aria-pressed="false">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" aria-hidden="true">
+        <circle cx="12" cy="12" r="4.2"/><path d="M12 2.5v2M12 19.5v2M2.5 12h2M19.5 12h2M5.2 5.2l1.4 1.4M17.4 17.4l1.4 1.4M18.8 5.2l-1.4 1.4M6.6 17.4l-1.4 1.4"/>
+      </svg>
+      <span id="themeLabel">Light mode</span>
+    </button>
+  </header>
+
+  <section class="hero">
+    <h1 class="rise">Resources &amp; Knowledge Hub</h1>
+    <p class="rise">Guides, open-source repositories and study material I have used myself, kept in one place and ordered by level.</p>
+  </section>
+
+  <div class="meta rise">
+    <span><b id="resourceCount">0</b> resources</span>
+    <span class="dot" aria-hidden="true"></span>
+    <span>Free to use, no sign-up</span>
+    <span class="dot" aria-hidden="true"></span>
+    <span>Updated as I find better ones</span>
+  </div>
+
+  <main class="grid" id="resourceGrid">
+
+    <!-- ================= CARD ITEM START (Copy/Paste this block to add new resources) ================= -->
+    <article class="card rise">
+      <figure class="card__media">
+        <!-- EDIT 1 — thumbnail: replace src with your own image URL (16:9 looks best) -->
+        <img src="r1.jpg" alt="">
+      </figure>
+      <div class="card__body">
+        <!-- EDIT 2 — badge -->
+        <span class="card__badge">GitHub repository</span>
+        <!-- EDIT 3 — title -->
+        <h2 class="card__title">Understanding and Discovering Data: End-to-End Tabular Workflow</h2>
+        <!-- EDIT 4 — description -->
+        <p class="card__desc">A practical, code-first Python reference pipeline breaking down the end-to-end data preparation lifecycle into six structured, copy-paste ready modules. Tested on real tabular data (Ames Housing), it provides thoroughly annotated code snippets covering data cleaning (Parts 1 & 2), exploratory data analysis (Parts 1 & 2), and feature engineering (Parts 1 & 2)—designed for fast lookup, revision, and modular reuse across data science projects.</p>
+        <!-- EDIT 5 — link -->
+        <a class="card__cta" href="https://github.com/hussienalomari7-ui/Understanding-and-discovering-data/tree/main" target="_blank" rel="noopener noreferrer">
+          Open the repository
+          <span class="arrow" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M5 12h13M12.5 5.5 19 12l-6.5 6.5"/>
+            </svg>
+          </span>
+        </a>
+      </div>
+    </article>
+    <!-- ================= CARD ITEM END ================= -->
+
+    <!-- ================= CARD ITEM START (Copy/Paste this block to add new resources) ================= -->
+    <article class="card rise">
+      <figure class="card__media">
+        <!-- EDIT 1 — thumbnail: replace src with your own image URL (16:9 looks best) -->
+        <img src="r2.jpg" alt="">
+      </figure>
+      <div class="card__body">
+        <!-- EDIT 2 — badge -->
+        <span class="card__badge">Study GitHub repository</span>
+        <!-- EDIT 3 — title -->
+        <h2 class="card__title">Python & Data Science Foundations: Annotated Code Reference</h2>
+        <!-- EDIT 4 — description -->
+        <p class="card__desc">A comprehensive, line-by-line annotated codebase covering core Python data structures (list, tuple, set, dict), Object-Oriented Programming (OOP), and the foundational data science stack (NumPy, Pandas, Matplotlib, Seaborn). Designed as a practical, interactive syntax and method-level guide for rapid technical lookup.</p>
+        <!-- EDIT 5 — link -->
+        <a class="card__cta" href="https://github.com/hussienalomari7-ui/Python/tree/main" target="_blank" rel="noopener noreferrer">
+           Open the repository
+          <span class="arrow" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M5 12h13M12.5 5.5 19 12l-6.5 6.5"/>
+            </svg>
+          </span>
+        </a>
+      </div>
+    </article>
+    <!-- ================= CARD ITEM END ================= -->
+     <!-- ================= CARD ITEM START (Copy/Paste this block to add new resources) ================= -->
+    <article class="card rise">
+      <figure class="card__media">
+        <!-- EDIT 1 — thumbnail: replace src with your own image URL (16:9 looks best) -->
+        <img src="3r.png" alt="">
+      </figure>
+      <div class="card__body">
+        <!-- EDIT 2 — badge -->
+        <span class="card__badge">اقرا البحث بالعربية </span>
+        <!-- EDIT 3 — title -->
+        <h2 class="card__title">Structural Transformation in Tech Labor Markets: IT, Software Engineering & AI Trajectories Toward 2030</h2>
+        <!-- EDIT 4 — description -->
+        <p class="card__desc">An analytical macro-study examining the structural reshaping of global US and European tech labor markets driven by Generative and Agentic AI toward 2030. Synthesizing data from the WEF, IMF, and Goldman Sachs, the report contrasts the 143% surge in AI engineering demand against entry-level displacement, task automation, and Europe’s 9.6-million tech talent gap.</p>
+        <!-- EDIT 5 — link -->
+        <a class="card__cta" href="https://docs.google.com/document/d/1E7BB2gR73_X_HI-JEoy5f-1wuZZOOAEvXKQQR-nvod0/edit?usp=sharing" target="_blank" rel="noopener noreferrer">
+           Open the search
+          <span class="arrow" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M5 12h13M12.5 5.5 19 12l-6.5 6.5"/>
+            </svg>
+          </span>
+        </a>
+      </div>
+    </article>
+    <!-- ================= CARD ITEM END ================= -->
+     <!-- ================= CARD ITEM START (Copy/Paste this block to add new resources) ================= -->
+    <article class="card rise">
+      <figure class="card__media">
+        <!-- EDIT 1 — thumbnail: replace src with your own image URL (16:9 looks best) -->
+        <img src="4r.png" alt="">
+      </figure>
+      <div class="card__body">
+        <!-- EDIT 2 — badge -->
+        <span class="card__badge">اقرا البحث بالعربية </span>
+        <!-- EDIT 3 — title -->
+        <h2 class="card__title">Digital Transformation in Healthcare: Comprehensive Market Analysis of Medical Software & Clinical AI (2026–2036)</h2>
+        <!-- EDIT 4 — description -->
+        <p class="card__desc">A comprehensive economic and technical study analyzing the structural integration of software engineering, predictive medicine, and clinical automation across global and regional healthcare ecosystems from 2026 to 2036. The report maps the multi-trillion-dollar expansion of Digital Health and Telehealthcare alongside the hyper-growth of Medical AI and Generative Clinical systems (exceeding 35% CAGR).</p>
+        <!-- EDIT 5 — link -->
+        <a class="card__cta" href="https://docs.google.com/document/d/1iu3zB-sUCgMsgryabxtGt5um2ipdTFPd9qMO6d1U4fg/edit?usp=sharing" target="_blank" rel="noopener noreferrer">
+           Open the search
+          <span class="arrow" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M5 12h13M12.5 5.5 19 12l-6.5 6.5"/>
+            </svg>
+          </span>
+        </a>
+      </div>
+    </article>
+    <!-- ================= CARD ITEM END ================= -->
+
+  </main>
+
+  <footer class="colophon">
+    This page keeps growing. If a resource here saved you time, or you know one that belongs on it, <a href="mailto:hello@example.com">write to me</a>.
+  </footer>
+
+</div>
+
+<script>
+(function () {
+  var root  = document.documentElement;
+  var btn   = document.getElementById('themeToggle');
+  var label = document.getElementById('themeLabel');
+  var grid  = document.getElementById('resourceGrid');
+  var count = document.getElementById('resourceCount');
+  var cards = grid ? grid.querySelectorAll('.card') : [];
+
+  // Counter reads the DOM, so a pasted card block stays accurate.
+  if (count) count.textContent = cards.length;
+
+  // Stagger the entrance: header and hero first, then the cards.
+  document.querySelectorAll('.rise').forEach(function (el, i) {
+    el.style.transitionDelay = (i * 90) + 'ms';
+  });
+  requestAnimationFrame(function () { root.classList.add('ready'); });
+
+  // Light follows the cursor across each card.
+  cards.forEach(function (card) {
+    card.addEventListener('pointermove', function (e) {
+      var r = card.getBoundingClientRect();
+      card.style.setProperty('--mx', (e.clientX - r.left) + 'px');
+      card.style.setProperty('--my', (e.clientY - r.top) + 'px');
+    });
+  });
+
+  function paint() {
+    var dark = root.getAttribute('data-theme') !== 'light';
+    label.textContent = dark ? 'Light mode' : 'Dark mode';
+    btn.setAttribute('aria-pressed', String(!dark));
+  }
+
+  btn.addEventListener('click', function () {
+    var next = root.getAttribute('data-theme') === 'light' ? 'dark' : 'light';
+    root.setAttribute('data-theme', next);
+    try { localStorage.setItem('hub-theme', next); } catch (e) {}
+    paint();
+  });
+
+  paint();
+})();
+</script>
+</body>
+</html>
